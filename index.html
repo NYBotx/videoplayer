@@ -1,64 +1,34 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!-- Include Plyr library -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plyr HLS Player</title>
   <link rel="stylesheet" href="https://cdn.plyr.io/3.6.8/plyr.css">
-  <!-- Include HLS.js library for HLS support -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 
-<video id="myVideo" controls>
+<video id="myVideo" controls crossorigin playsinline>
   Your browser does not support the video tag.
 </video>
 
 <script src="https://cdn.plyr.io/3.6.8/plyr.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/plyr-hls/dist/plyr.hls.bundle.js"></script>
 <script type="text/javascript">
   const urlParams = new URLSearchParams(window.location.search);
   const videoUrl = urlParams.get("videoUrl");
 
   if (videoUrl) {
-    const player = new Plyr('#myVideo', {
-      // Options (optional)
-      controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
-      // Enable HLS support
+    const video = document.getElementById("myVideo");
+    const source = document.createElement("source");
+    source.src = videoUrl;
+    source.type = "application/x-mpegURL"; // Change the type to HLS
+    video.appendChild(source);
+    const player = new Plyr(video, {
       hls: {
-        enable: true,
-        // Use HLS.js library
-        html: {
-          vhs: {
-            // Load HLS.js from CDN
-            enable: true,
-            overrideNative: true
-          }
-        }
+        enableSoftware: true,
       }
     });
-
-    // Add sources with multiple qualities
-    player.source = {
-      type: 'video',
-      sources: [
-        {
-          src: videoUrl + '/index.m3u8', // HLS URL
-          type: 'application/x-mpegURL',
-          size: 1080, // Quality label (e.g., 1080p)
-          label: '1080p' // Quality name
-        },
-        {
-          src: videoUrl + '/index.m3u8', // HLS URL
-          type: 'application/x-mpegURL',
-          size: 720,
-          label: '720p'
-        },
-        {
-          src: videoUrl + '/index.m3u8', // HLS URL
-          type: 'application/x-mpegURL',
-          size: 480,
-          label: '480p'
-        }
-      ]
-    };
   }
 </script>
 
