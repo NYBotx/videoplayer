@@ -85,49 +85,44 @@ video {
   'fullscreen' // Toggle fullscreen 
 ]
     });
-	  const videoUrl = '';
-	  const video = document.querySelector('video');
-    
-  const defaultOptions = { controls, captions: { active: true, update: false, language: 'auto' } };
-
-  if (Hls.isSupported()) {
-
-    const hls = new Hls();
-    hls.loadSource(source);
-    hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-
-      // Transform available levels into an array of integers (height values).
-      const availableQualities = hls.levels.map(l => l.height);
-
-      // Add new qualities to option
-      defaultOptions.quality = {
-        default: availableQualities[0],
-        options: availableQualities,
-        // this ensures Plyr to use Hls to update quality level
-        forced: true,
-        onChange: e => updateQuality(e) };
-
-
-      // Initialize here
-      const player = new Plyr(video, defaultOptions);
-    });
-    hls.attachMedia(video);
-    window.hls = hls;
-  } else {
-
-    const player = new Plyr(video, defaultOptions);
-  }
-
-  function updateQuality(newQuality) {
-    window.hls.levels.forEach((level, levelIndex) => {
-      if (level.height === newQuality) {
-        console.log("Found quality match with " + newQuality);
-        window.hls.currentLevel = levelIndex;
+	 hls: {
+        enable: true,
+        // Use HLS.js library
+        html: {
+          vhs: {
+            // Load HLS.js from CDN
+            enable: true,
+            overrideNative: true
+          }
+        }
       }
     });
+
+    // Add sources with multiple qualities
+    player.source = {
+      type: 'video',
+      sources: [
+        {
+          src: videoUrl + '/index.m3u8', // HLS URL
+          type: 'application/x-mpegURL',
+          size: 1080, // Quality label (e.g., 1080p)
+          label: '1080p' // Quality name
+        },
+        {
+          src: videoUrl + '/index.m3u8', // HLS URL
+          type: 'application/x-mpegURL',
+          size: 720,
+          label: '720p'
+        },
+        {
+          src: videoUrl + '/index.m3u8', // HLS URL
+          type: 'application/x-mpegURL',
+          size: 480,
+          label: '480p'
+        }
+      ]
+    };
   }
-});
-//# source
 </script>
 
 </body>
