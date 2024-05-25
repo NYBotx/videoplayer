@@ -1,22 +1,37 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <!-- Include Plyr library -->
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.6.8/plyr.css">
+</head>
 <body>
 
 <video id="myVideo" width="320" height="240" controls>
   Your browser does not support the video tag.
 </video>
 
+<script src="https://cdn.plyr.io/3.6.8/plyr.js"></script>
 <script type="text/javascript">
   const urlParams = new URLSearchParams(window.location.search);
   const videoUrl = urlParams.get("videoUrl");
 
   if (videoUrl) {
-    const video = document.getElementById("myVideo");
-    const source = document.createElement("source");
-    source.src = videoUrl;
-    source.type = "video/mp4";
-    video.appendChild(source);
-    video.load();
+    const player = new Plyr('#myVideo', {
+      // Options (optional)
+      controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen']
+    });
+    
+    // Add the source to the player
+    player.source = {
+      type: 'video',
+      sources: [
+        {
+          src: videoUrl,
+          type: 'video/mp4',
+          size: 320
+        }
+      ]
+    };
   }
 </script>
 
