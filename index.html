@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JW Player Example</title>
+  <!-- Include JW Player library -->
+  <script src="https://cdn.jwplayer.com/libraries/n9HqAg7F.js"></script>
+</head>
+<body>
+  <div id="myElement">Loading the player...</div>
+
+  <script type="text/javascript">
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoUrl = urlParams.get("videoUrl");
+
+    // JW Player setup
+    jwplayer("myElement").setup({
+      file: videoUrl,
+      width: "100%",
+      aspectratio: "16:9" // Adjust this ratio according to your video's aspect ratio
+    });
+  </script>
+</body>
+</html>
