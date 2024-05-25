@@ -6,31 +6,55 @@
   <title>Plyr HLS Player</title>
   <link rel="stylesheet" href="https://cdn.plyr.io/3.6.8/plyr.css">
 </head>
-<body>
+<body translate="no">
+  <div class='container'>
+    <span class="dots"></span>
+    <video id="myVideo" controls="" crossorigin="" playsinline=""></video>
+  </div>
+  <script src='https://cdn.jsdelivr.net/npm/hls.js@canary'></script>
+  <script src='https://unpkg.com/plyr@3'></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const videoUrl = urlParams.get('videoUrl');
+      const video = document.getElementById('myVideo');
 
-<video id="myVideo" controls crossorigin playsinline>
-  Your browser does not support the video tag.
-</video>
-
-<script src="https://cdn.plyr.io/3.6.8/plyr.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/plyr-hls/dist/plyr.hls.bundle.js"></script>
-<script type="text/javascript">
-  const urlParams = new URLSearchParams(window.location.search);
-  const videoUrl = urlParams.get("videoUrl");
-
-  if (videoUrl) {
-    const video = document.getElementById("myVideo");
-    const source = document.createElement("source");
-    source.src = videoUrl;
-    source.type = "application/x-mpegURL"; // Change the type to HLS
-    video.appendChild(source);
-    const player = new Plyr(video, {
-      hls: {
-        enableSoftware: true,
+      if (videoUrl) {
+        if (Hls.isSupported()) {
+          const hls = new Hls();
+          hls.loadSource(videoUrl);
+          hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+            // Initialize Plyr with HLS support
+            const player = new Plyr(video, {
+              controls: ['play-large', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'duration', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+              captions: { active: true, update: false, language: 'auto' },
+              quality: {
+                default: hls.levels[0].height,
+                options: hls.levels.map(level => level.height),
+                forced: true,
+                onChange: (quality) => {
+                  hls.levels.forEach((level, index) => {
+                    if (level.height === quality) {
+                      hls.currentLevel = index;
+                    }
+                  });
+                }
+              }
+            });
+          });
+          hls.attachMedia(video);
+        } else {
+          // If HLS is not supported, fallback to default Plyr setup
+          const player = new Plyr(video, {
+            controls: ['play-large', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'duration', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+            captions: { active: true, update: false, language: 'auto' }
+          });
+          video.src = videoUrl;
+        }
+      } else {
+        console.error('No video URL provided.');
       }
     });
-  }
-</script>
-
+  </script>
 </body>
 </html>
